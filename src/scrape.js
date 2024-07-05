@@ -17,6 +17,7 @@ async function scrape(url) {
     const result = await page.evaluate(() => {
         const container = document.querySelector('.v3-modal-body');
         if (!container) {
+            console.log('Elemento .v3-modal-body não encontrado');
             return {
                 title: 'Elemento não encontrado',
                 elementText: 'Elemento não encontrado',
@@ -27,6 +28,7 @@ async function scrape(url) {
 
         const betEvent = container.querySelector('.BetEvent');
         if (!betEvent) {
+            console.log('Elemento .BetEvent não encontrado');
             return {
                 title: 'Elemento não encontrado',
                 elementText: 'Elemento não encontrado',
@@ -36,6 +38,7 @@ async function scrape(url) {
         }
         const BetEventMarketInfo = container.querySelector('.BetEventMarketInfo');
         if (!BetEventMarketInfo) {
+            console.log('Elemento .BetEventMarketInfo não encontrado');
             return {
                 title: 'Elemento não encontrado',
                 elementText: 'Elemento não encontrado',

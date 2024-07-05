@@ -48,24 +48,30 @@
                     `Unidade: ${result.uniText2}\n` +
                     `Evento: ${result.eventText}`;
 
-                // Atualiza o evento de clique do botão de cópia com os dados extraídos
-                document.getElementById('copyBtn').addEventListener('click', function() {
-                    const { dateText2, compText, eventText, uniText2, oddText, entText, ent2Text } = result;
-
-                    const data = `${dateText2}\t\t${compText}\t${eventText}\t\t\t${uniText2}\t${oddText2}\t\t\t${ent2Text} - ${entText}`;
-
-                    navigator.clipboard.writeText(data)
-                        .then(() => {
-                            alert('Dados copiados para a área de transferência.');
-                        })
-                        .catch(err => {
-                            console.error('Erro ao copiar:', err);
-                            alert('Erro ao copiar dados. Verifique o console para mais informações.');
-                        });
-                });
+                // Armazena os dados em um atributo data do botão para serem usados na cópia
+                document.getElementById('copyBtn').dataset.copyText =
+                    `${result.dateText2}\t\t${result.compText}\t${result.eventText}\t\t\t${result.uniText2}\t${result.oddText2}\t\t\t${result.ent2Text} - ${result.entText}`;
+                
             } catch (error) {
                 console.error('Erro:', error);
                 document.getElementById('output').textContent = 'Erro ao extrair dados. Verifique o console para mais informações.';
+            }
+        });
+
+        // Associa o evento de clique ao botão de cópia
+        document.getElementById('copyBtn').addEventListener('click', function() {
+            const data = document.getElementById('copyBtn').dataset.copyText;
+            if (data) {
+                navigator.clipboard.writeText(data)
+                    .then(() => {
+                        alert('Dados copiados para a área de transferência.');
+                    })
+                    .catch(err => {
+                        console.error('Erro ao copiar:', err);
+                        alert('Erro ao copiar dados. Verifique o console para mais informações.');
+                    });
+            } else {
+                alert('Nenhum dado para copiar. Extraia os dados primeiro.');
             }
         });
     </script>
