@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt_BR">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,26 +8,65 @@
 <body>
     <h1>Planilhador</h1>
     <form id="scrapeForm">
-        <label for="url">URL do site:</label>
+        <label for="url">Link da entrada:</label>
         <input type="text" id="url" name="url" required>
         <button type="submit">Extrair Dados</button>
     </form>
     <h2>Resultados:</h2>
     <pre id="output"></pre>
+    <button id="copyBtn">Copiar para Área de Transferência</button>
 
     <script>
         document.getElementById('scrapeForm').addEventListener('submit', async function(event) {
-            event.preventDefault();
-            const url = document.getElementById('url').value;
-            const response = await fetch('/scrape', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ url })
-            });
-            const result = await response.json();
-            document.getElementById('output').textContent = `Título: ${result.title}\nTexto do elemento: ${result.elementText}\nData: ${result.dateText}`;
+            event.preventDefault(); // Previne o comportamento padrão de envio do formulário
+
+            const url = document.getElementById('url').value.trim(); // Obtém a URL e remove espaços em branco extras
+
+            try {
+                // Envia a requisição POST assíncrona para o servidor Node.js
+                const response = await fetch('/scrape', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ url })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erro ao extrair dados');
+                }
+
+                // Converte a resposta para JSON
+                const result = await response.json();
+
+                // Atualiza o conteúdo do elemento #output com os dados retornados
+                document.getElementById('output').textContent = 
+                    `Odd: ${result.oddText2}\n` +
+                    `Competição: ${result.compText}\n` +
+                    `Data: ${result.dateText2}\n` +
+                    `Entrada: ${result.ent2Text} - ${result.entText}\n` +
+                    `Unidade: ${result.uniText2}\n` +
+                    `Evento: ${result.eventText}`;
+
+                // Atualiza o evento de clique do botão de cópia com os dados extraídos
+                document.getElementById('copyBtn').addEventListener('click', function() {
+                    const { dateText2, compText, eventText, uniText2, oddText, entText, ent2Text } = result;
+
+                    const data = `${dateText2}\t\t${compText}\t${eventText}\t\t\t${uniText2}\t${oddText2}\t\t\t${ent2Text} - ${entText}`;
+
+                    navigator.clipboard.writeText(data)
+                        .then(() => {
+                            alert('Dados copiados para a área de transferência.');
+                        })
+                        .catch(err => {
+                            console.error('Erro ao copiar:', err);
+                            alert('Erro ao copiar dados. Verifique o console para mais informações.');
+                        });
+                });
+            } catch (error) {
+                console.error('Erro:', error);
+                document.getElementById('output').textContent = 'Erro ao extrair dados. Verifique o console para mais informações.';
+            }
         });
     </script>
 </body>

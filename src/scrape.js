@@ -7,17 +7,115 @@ app.use(bodyParser.json());
 app.use(express.static('public'));
 
 async function scrape(url) {
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({ headless: true }); // Use headless: false for debugging
     const page = await browser.newPage();
-    await page.goto(url);
+    await page.goto(url, { waitUntil: 'networkidle2' });
+
+    // Espera a página carregar para buscar os elementos
+    await page.waitForSelector('.v3-modal-body', { timeout: 5000 });
 
     const result = await page.evaluate(() => {
-        const title = document.querySelector('title')?.innerText || 'Nenhum título encontrado';
-        const elementText = document.querySelector('div.some-class')?.innerText || 'Elemento não encontrado';
-        const dateElement = document.querySelector('.BetEventData');
-        const dateText = dateElement ? dateElement.querySelector('span')?.innerText || 'Data não encontrada' : 'Data não encontrada';
+        const container = document.querySelector('.v3-modal-body');
+        if (!container) {
+            return {
+                title: 'Elemento não encontrado',
+                elementText: 'Elemento não encontrado',
+                dateText: 'Elemento não encontrado',
+                eventText: 'Elemento não encontrado'
+            };
+        }
+
+        const betEvent = container.querySelector('.BetEvent');
+        if (!betEvent) {
+            return {
+                title: 'Elemento não encontrado',
+                elementText: 'Elemento não encontrado',
+                dateText: 'Elemento não encontrado',
+                eventText: 'Elemento não encontrado'
+            };
+        }
+        const BetEventMarketInfo = container.querySelector('.BetEventMarketInfo');
+        if (!BetEventMarketInfo) {
+            return {
+                title: 'Elemento não encontrado',
+                elementText: 'Elemento não encontrado',
+                dateText: 'Elemento não encontrado',
+                eventText: 'Elemento não encontrado'
+            };
+        }
+                const BetResultItems = container.querySelectorAll('.BetResultItem');
+                const BetResultItem = BetResultItems[1]; // Seleciona o segundo elemento (índice 1)
+                console.log('BetResultItem HTML:', BetResultItem.outerHTML);
+                // Verifique se o BetResultItem foi encontrado antes de continuar
+                if (!BetResultItem) {
+                return {
+                title: 'Elemento não encontrado',
+                elementText: 'Elemento não encontrado',
+                dateText: 'Elemento não encontrado',
+                eventText: 'Elemento não encontrado'
+            };
+        }
+
+        //Buscando unidade e formatando de moeda para unidade
+        const uniElement = BetResultItem.querySelector('.BetResultValue');
+        console.log('Event Element HTML:', uniElement?.outerHTML);
+
+        const uniText = uniElement ? uniElement.innerText || 'Unidade não encontrada' : 'Unidade não encontrada';
+        const valorNumerico = uniText.replace(/[^\d.-]/g, "");
+        const uniText2 = Number(valorNumerico) / 100;
+        //Buscando a Entrada
+        const entElement = BetEventMarketInfo.querySelector('.BetEventMarketName');
+        console.log('Event Element HTML:', entElement?.outerHTML);
+
+        const entText = entElement ? entElement.innerText || 'Odd não encontrada' : 'Odd não encontrada'
+
+        const emt2Element = container.querySelectorAll('.BetEventName')[1];
+        console.log('Event Element HTML:', emt2Element?.outerHTML);
+
+        const ent2Text = emt2Element ? emt2Element.innerText || 'Evento não encontrado' : 'Evento não encontrado';
         
-        return { title, elementText, dateText };
+        //Buscando a Odd
+        const oddElement = BetEventMarketInfo.querySelector('.BetEventCoeficent');
+        console.log('Event Element HTML:', oddElement?.outerHTML);
+
+        const oddText = oddElement ? oddElement.innerText || 'Odd não encontrada' : 'Odd não encontrada'
+        const oddText2 = oddText.replace('.', ',');
+        //Buscando a data
+        const dateElement = betEvent.querySelector('.BetEventData');
+        console.log('Event Element HTML:', dateElement?.outerHTML);
+
+        const dateText = dateElement ? dateElement.innerText || 'Data não encontrada' : 'Data não encontrada';
+        let parts = dateText.split(" ");
+        let dia = parts[0];
+        let mesAbreviado = parts[1];
+        let meses = {
+            "jan": "01",
+            "fev": "02",
+            "mar": "03",
+            "abr": "04",
+            "mai": "05",
+            "jun": "06",
+            "jul": "07",
+            "ago": "08",
+            "set": "09",
+            "out": "10",
+            "nov": "11",
+            "dez": "12"
+        };
+        let mes = meses[mesAbreviado.toLowerCase()];
+        let dateText2 = `${dia}/${mes}`;
+        //Buscando o confronto
+        const eventElement = betEvent.querySelector('.BetEventRedirection');
+        console.log('Event Element HTML:', eventElement?.outerHTML);
+
+        const eventText = eventElement ? eventElement.innerText || 'Evento não encontrado' : 'Evento não encontrado';
+        //Buscando a competição
+        const compElement = container.querySelector('.BetslipContainer__competitionName');
+        console.log('Event Element HTML:', compElement?.outerHTML);
+
+        const compText = compElement ? compElement.innerText || 'Competição não encontrada' : 'Competição não encontrada';
+
+        return { oddText2, compText, dateText2, eventText, entText, ent2Text, uniText2 };
     });
 
     await browser.close();
