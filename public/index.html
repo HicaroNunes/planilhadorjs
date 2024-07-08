@@ -4,12 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Planilhador</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <h1>Planilhador</h1>
     <form id="scrapeForm">
         <label for="url">Link da entrada:</label>
         <input type="text" id="url" name="url" required>
+        <br><br>
+        <label for="category">Tipster: </label>
+        <select id="category" name="category">
+            <option value="Hicaro Sabino">Hicaro Sabino</option>
+            <option value="Gabriel Leiroz">Gabriel Leiroz</option>
+        </select>
+        <br><br>
         <button type="submit">Extrair Dados</button>
     </form>
     <h2>Resultados:</h2>
@@ -21,6 +29,7 @@
             event.preventDefault(); // Previne o comportamento padrão de envio do formulário
 
             const url = document.getElementById('url').value.trim(); // Obtém a URL e remove espaços em branco extras
+            const tipster = document.getElementById('category').value; // Obtém a categoria selecionada
 
             try {
                 // Envia a requisição POST assíncrona para o servidor Node.js
@@ -39,18 +48,24 @@
                 // Converte a resposta para JSON
                 const result = await response.json();
 
+
+
                 // Atualiza o conteúdo do elemento #output com os dados retornados
                 document.getElementById('output').textContent = 
                     `Odd: ${result.oddText2}\n` +
                     `Competição: ${result.compText}\n` +
-                    `Data: ${result.dateText2}\n` +
+                    `Data do jogo: ${result.dateText2}\n` +
+                    `Hora do jogo: ${result.horaText}\n` +
                     `Entrada: ${result.ent2Text} - ${result.entText}\n` +
                     `Unidade: ${result.uniText2}\n` +
+                    `Tipsper: ${tipster}\n` +
+                    `Data/Hora da entrada: ${result.dateEntText}\n` +
+                    `Pre/Live: ${result.situacao}\n` +
                     `Evento: ${result.eventText}`;
 
                 // Armazena os dados em um atributo data do botão para serem usados na cópia
                 document.getElementById('copyBtn').dataset.copyText =
-                    `${result.dateText2}\t\t${result.compText}\t${result.eventText}\t\t\t${result.uniText2}\t${result.oddText2}\t\t\t${result.ent2Text} - ${result.entText}`;
+                    `${result.dateText2}\t${tipster}\t${result.compText}\t${result.eventText}\t\t\t${result.uniText2}\t${result.oddText2}\t\t\t${result.ent2Text} - ${result.entText}`;
                 
             } catch (error) {
                 console.error('Erro:', error);
@@ -58,7 +73,7 @@
             }
         });
 
-        // Associa o evento de clique ao botão de cópia
+        // Evento de Click para copiar os dados
         document.getElementById('copyBtn').addEventListener('click', function() {
             const data = document.getElementById('copyBtn').dataset.copyText;
             if (data) {
