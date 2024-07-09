@@ -138,3 +138,29 @@ table tr:nth-child(odd) {
         font-size: 1.5em;
     }
 }
+/* Adicione no final do seu arquivo CSS existente */
+.footer {
+    position: fixed;
+    bottom: 10px; /* Ajuste a margem inferior */
+    right: 10px; /* Ajuste a margem direita */
+    z-index: 1000; /* Para garantir que fique acima de outros elementos */
+}
+
+.footer-button {
+    display: inline-block;
+    background-color: #333;
+    color: #ffffff;
+    padding: 8px 12px; /* Ajuste o padding */
+    font-size: 12px; /* Ajuste o tamanho da fonte */
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.footer-button:hover {
+    background-color: #555;
+}
+
+
+
+
