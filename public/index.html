@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Planilhador</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="shortcut icon" href="icon.ico" type="image/x-icon">
 </head>
 <body>
     <h1>Planilhador</h1>
@@ -15,7 +16,7 @@
         <label for="category">Tipster: </label>
         <select id="category" name="category">
             <option value="Hicaro Sabino">Hicaro Sabino</option>
-            <option value="Gabriel Leiroz">Gabriel Leiroz</option>
+            <option value="Gabriel Leiroz">Gabriel Pinheiro</option>
         </select>
         <br><br>
         <button type="submit">Extrair Dados</button>
@@ -57,15 +58,16 @@
                     `Data do jogo: ${result.dateText2}\n` +
                     `Hora do jogo: ${result.horaText}\n` +
                     `Entrada: ${result.ent2Text} - ${result.entText}\n` +
-                    `Unidade: ${result.uniText2}\n` +
+                    `Unidade: ${result.uniText3}\n` +
                     `Tipsper: ${tipster}\n` +
                     `Data/Hora da entrada: ${result.dateEntText}\n` +
+                    `Tipo da entrada: ${result.tipoent}\n` +
                     `Pre/Live: ${result.situacao}\n` +
                     `Evento: ${result.eventText}`;
 
                 // Armazena os dados em um atributo data do botão para serem usados na cópia
                 document.getElementById('copyBtn').dataset.copyText =
-                    `${result.dateText2}\t${tipster}\t${result.compText}\t${result.eventText}\t\t${result.situacao}\t${result.uniText2}\t${result.oddText2}\t\t\t${result.ent2Text} - ${result.entText}`;
+                    `${result.dateText2}\t${tipster}\t${result.compText}\t${result.eventText}\t${result.tipoent}\t${result.situacao}\t${result.uniText3}\t${result.oddText2}\t\t\t${result.ent2Text} - ${result.entText}`;
                 
             } catch (error) {
                 console.error('Erro:', error);

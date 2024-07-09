@@ -11,10 +11,10 @@ async function scrape(url) {
     const page = await browser.newPage();
     
     try {
-        await page.goto(url, { waitUntil: 'networkidle2' });
+        await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
 
         // Espera a div v3-modal-content carregar
-        await page.waitForSelector('.v3-modal-content', { timeout: 5000 });
+        await page.waitForSelector('.v3-modal-content', { timeout: 10000 });
 
         const result = await page.evaluate(() => {
             const container = document.querySelector('.v3-modal-body');
@@ -70,6 +70,7 @@ async function scrape(url) {
             const uniText = uniElement ? uniElement.innerText || 'Unidade não encontrada' : 'Unidade não encontrada';
             const valorNumerico = uniText.replace(/[^\d.-]/g, "");
             const uniText2 = Number(valorNumerico) / 100;
+            const uniText3 = uniText2.toString().replace('.', ',');
 
             // Buscando a Entrada
             const entElement = BetEventMarketInfo.querySelector('.BetEventMarketName');
@@ -79,6 +80,38 @@ async function scrape(url) {
             const emt2Element = container.querySelectorAll('.BetEventName')[1];
             console.log('Event Element HTML:', emt2Element?.outerHTML);
             const ent2Text = emt2Element ? emt2Element.innerText || 'Evento não encontrado' : 'Evento não encontrado';
+
+            //Puxando qual o modelo de entrada foi feita
+            let tipoent;
+            if (ent2Text.includes('Resultado Final')) {
+                tipoent = 'Vencedor';
+            } else if (ent2Text.includes('Rebotes')) {
+                tipoent = 'Rebotes';
+            } else if (ent2Text.includes('pontos')) {
+                tipoent = 'Pontos';
+            } else if (ent2Text.includes('Dupla Chance')) {
+                tipoent = 'Dupla Chance';
+            } else if (ent2Text.includes('Gols')) {
+                tipoent = 'Gols';
+            } else if (ent2Text.includes('Handicap')) {
+                tipoent = 'Handicap';
+            } else if (ent2Text.includes('Escanteios')) {
+                tipoent = 'Escanteios';
+            } else if (ent2Text.includes('Assistências')) {
+                tipoent = 'Assistências';
+            } else if (ent2Text.includes('Mapas')) {
+                tipoent = 'Mapas';
+            } else if (ent2Text.includes('Vencedor da partida')) {
+                tipoent = 'Winner';
+            } else if (ent2Text.includes('Meio tempo/Partida inteira')) {
+                tipoent = 'HT-FT';
+            } else if (ent2Text.includes('Empate Anula a Aposta')) {
+                tipoent = 'DNB';
+            } else if (ent2Text.includes('Vencedor do 1º tempo')) {
+                tipoent = 'HT';
+            } else {
+                tipoent = 'Outro';
+            }
             
             // Buscando a Odd
             const oddElement = BetEventMarketInfo.querySelector('.BetEventCoeficent');
@@ -123,7 +156,7 @@ async function scrape(url) {
             // Transformando a data no outro padrão
             const dataaposta = `${dateText} | ${horaText}`;
 
-            return { oddText2, compText, dateText2, eventText, entText, ent2Text, uniText2, dateEntText, dataaposta, horaText };
+            return { oddText2, compText, dateText2, eventText, entText, ent2Text, uniText3, dateEntText, dataaposta, horaText, tipoent };
         });
 
         // Função para comparar as datas
