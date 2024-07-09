@@ -1,99 +1,99 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planilhador</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="shortcut icon" href="icon.ico" type="image/x-icon">
-</head>
-<body>
-    <h1>Planilhador</h1>
-    <form id="scrapeForm">
-        <label for="url">Link da entrada:</label>
-        <input type="text" id="url" name="url" required>
-        <br><br>
-        <label for="category">Tipster: </label>
-        <select id="category" name="category">
-            <option value="Hicaro Sabino">Hicaro Sabino</option>
-            <option value="Gabriel Leiroz">Gabriel Pinheiro</option>
-        </select>
-        <br><br>
-        <button type="submit">Extrair Dados</button>
-    </form>
-    <h2>Resultados:</h2>
-    <pre id="output"></pre>
-    <button id="copyBtn">Copiar para Área de Transferência</button>
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Planilhador</title>
+        <link rel="stylesheet" href="styles.css">
+        <link rel="shortcut icon" href="icon.ico" type="image/x-icon">
+    </head>
+    <body>
+        <h1>Planilhador</h1>
+        <form id="scrapeForm">
+            <label for="url">Link da entrada:</label>
+            <input type="text" id="url" name="url" required>
+            <br><br>
+            <label for="category">Tipster: </label>
+            <select id="category" name="category">
+                <option value="Hicaro Sabino">Hicaro Sabino</option>
+                <option value="Gabriel Leiroz">Gabriel Pinheiro</option>
+            </select>
+            <br><br>
+            <button type="submit">Extrair Dados</button>
+        </form>
+        <h2>Resultados:</h2>
+        <pre id="output"></pre>
+        <button id="copyBtn">Copiar para Área de Transferência</button>
 
-    <script>
-        document.getElementById('scrapeForm').addEventListener('submit', async function(event) {
-            event.preventDefault(); // Previne o comportamento padrão de envio do formulário
+        <script>
+            document.getElementById('scrapeForm').addEventListener('submit', async function(event) {
+                event.preventDefault(); // Previne o comportamento padrão de envio do formulário
 
-            const url = document.getElementById('url').value.trim(); // Obtém a URL e remove espaços em branco extras
-            const tipster = document.getElementById('category').value; // Obtém a categoria selecionada
+                const url = document.getElementById('url').value.trim(); // Obtém a URL e remove espaços em branco extras
+                const tipster = document.getElementById('category').value; // Obtém a categoria selecionada
 
-            try {
-                // Envia a requisição POST assíncrona para o servidor Node.js
-                const response = await fetch('/scrape', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ url })
-                });
-
-                if (!response.ok) {
-                    throw new Error('Erro ao extrair dados');
-                }
-
-                // Converte a resposta para JSON
-                const result = await response.json();
-
-
-
-                // Atualiza o conteúdo do elemento #output com os dados retornados
-                document.getElementById('output').textContent = 
-                    `Odd: ${result.oddText2}\n` +
-                    `Competição: ${result.compText}\n` +
-                    `Data do jogo: ${result.dateText2}\n` +
-                    `Hora do jogo: ${result.horaText}\n` +
-                    `Entrada: ${result.ent2Text} - ${result.entText}\n` +
-                    `Unidade: ${result.uniText3}\n` +
-                    `Tipsper: ${tipster}\n` +
-                    `Data/Hora da entrada: ${result.dateEntText}\n` +
-                    `Tipo da entrada: ${result.tipoent}\n` +
-                    `Pre/Live: ${result.situacao}\n` +
-                    `Evento: ${result.eventText}`;
-
-                // Armazena os dados em um atributo data do botão para serem usados na cópia
-                document.getElementById('copyBtn').dataset.copyText =
-                    `${result.dateText2}\t${tipster}\t${result.compText}\t${result.eventText}\t${result.tipoent}\t${result.situacao}\t${result.uniText3}\t${result.oddText2}\t\t\t${result.ent2Text} - ${result.entText}`;
-                
-            } catch (error) {
-                console.error('Erro:', error);
-                document.getElementById('output').textContent = 'Erro ao extrair dados. Verifique o console para mais informações.';
-            }
-        });
-
-        // Evento de Click para copiar os dados
-        document.getElementById('copyBtn').addEventListener('click', function() {
-            const data = document.getElementById('copyBtn').dataset.copyText;
-            if (data) {
-                navigator.clipboard.writeText(data)
-                    .then(() => {
-                        alert('Dados copiados para a área de transferência.');
-                    })
-                    .catch(err => {
-                        console.error('Erro ao copiar:', err);
-                        alert('Erro ao copiar dados. Verifique o console para mais informações.');
+                try {
+                    // Envia a requisição POST assíncrona para o servidor Node.js
+                    const response = await fetch('/scrape', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ url })
                     });
-            } else {
-                alert('Nenhum dado para copiar. Extraia os dados primeiro.');
-            }
-        });
-    </script>
-    <div class="footer">
-        <a href="https://www.instagram.com/hicaro_sabino/" target="_blank" class="footer-button">Desenvolvido por Hicaro Nunes</a>
-    </div>
-</body>
-</html>
+
+                    if (!response.ok) {
+                        throw new Error('Erro ao extrair dados');
+                    }
+
+                    // Converte a resposta para JSON
+                    const result = await response.json();
+
+
+
+                    // Atualiza o conteúdo do elemento #output com os dados retornados
+                    document.getElementById('output').textContent = 
+                        `Odd: ${result.oddText2}\n` +
+                        `Competição: ${result.compText}\n` +
+                        `Data do jogo: ${result.dateText2}\n` +
+                        `Hora do jogo: ${result.horaText}\n` +
+                        `Entrada: ${result.ent2Text} - ${result.entText}\n` +
+                        `Unidade: ${result.uniText3}\n` +
+                        `Tipsper: ${tipster}\n` +
+                        `Data/Hora da entrada: ${result.dateEntText}\n` +
+                        `Tipo da entrada: ${result.tipoent}\n` +
+                        `Pre/Live: ${result.situacao}\n` +
+                        `Evento: ${result.eventText}`;
+
+                    // Armazena os dados em um atributo data do botão para serem usados na cópia
+                    document.getElementById('copyBtn').dataset.copyText =
+                        `${result.dateText2}\t${tipster}\t${result.compText}\t${result.eventText}\t${result.tipoent}\t${result.situacao}\t${result.uniText3}\t${result.oddText2}\t\t\t${result.ent2Text} - ${result.entText}`;
+                    
+                } catch (error) {
+                    console.error('Erro:', error);
+                    document.getElementById('output').textContent = 'Erro ao extrair dados. Verifique o console para mais informações.';
+                }
+            });
+
+            // Evento de Click para copiar os dados
+            document.getElementById('copyBtn').addEventListener('click', function() {
+                const data = document.getElementById('copyBtn').dataset.copyText;
+                if (data) {
+                    navigator.clipboard.writeText(data)
+                        .then(() => {
+                            alert('Dados copiados para a área de transferência.');
+                        })
+                        .catch(err => {
+                            console.error('Erro ao copiar:', err);
+                            alert('Erro ao copiar dados. Verifique o console para mais informações.');
+                        });
+                } else {
+                    alert('Nenhum dado para copiar. Extraia os dados primeiro.');
+                }
+            });
+        </script>
+        <div class="footer">
+            <a href="https://www.instagram.com/hicaro_sabino/" target="_blank" class="footer-button">Desenvolvido por Hicaro Nunes</a>
+        </div>
+    </body>
+    </html>
