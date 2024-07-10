@@ -27,13 +27,13 @@
 
         <script>
             document.getElementById('scrapeForm').addEventListener('submit', async function(event) {
-                event.preventDefault(); // Previne o comportamento padrão de envio do formulário
+                event.preventDefault();
 
-                const url = document.getElementById('url').value.trim(); // Obtém a URL e remove espaços em branco extras
-                const tipster = document.getElementById('category').value; // Obtém a categoria selecionada
+                const url = document.getElementById('url').value.trim();
+                const tipster = document.getElementById('category').value;
 
                 try {
-                    // Envia a requisição POST assíncrona para o servidor Node.js
+                    // Envia a requisição POST para o servidor Node.js
                     const response = await fetch('/scrape', {
                         method: 'POST',
                         headers: {
@@ -93,7 +93,7 @@
             });
         </script>
         <div class="footer">
-            <a href="https://www.instagram.com/hicaro_sabino/" target="_blank" class="footer-button">Desenvolvido por Hicaro Nunes</a>
+            <a href="https://github.com/HicaroNunes" target="_blank" class="footer-button">Desenvolvido por Hicaro Nunes</a>
         </div>
     </body>
     </html>
